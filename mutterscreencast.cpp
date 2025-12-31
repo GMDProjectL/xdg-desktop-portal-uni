@@ -26,7 +26,6 @@ bool MutterScreenCast::isAvailable() const
 QString MutterScreenCast::createSession()
 {
     QVariantMap properties;
-    // Empty properties for now, could add "remote-desktop-session-id" if needed
 
     QDBusReply<QDBusObjectPath> reply = m_screencast->CreateSession(properties);
     if (!reply.isValid()) {
@@ -36,16 +35,12 @@ QString MutterScreenCast::createSession()
 
     QString sessionPath = reply.value().path();
 
-    // Create session interface
     auto *session = new MutterScreenCastSessionInterface(sessionPath, this);
     m_sessions[sessionPath] = session;
 
-    // Connect closed signal
     connect(session, &MutterScreenCastSessionInterface::Closed, this, [this, sessionPath]() {
         qInfo() << "Session closed:" << sessionPath;
         emit sessionClosed(sessionPath);
-
-        // Clean up
         m_sessions.remove(sessionPath);
     });
 
@@ -74,7 +69,6 @@ QString MutterScreenCast::recordMonitor(const QString &sessionPath,
 
     QString streamPath = reply.value().path();
 
-    // Create stream interface
     auto *stream = new MutterScreenCastStreamInterface(streamPath, this);
     m_streams[streamPath] = stream;
 
@@ -111,11 +105,9 @@ QString MutterScreenCast::recordWindow(const QString &sessionPath,
 
     QString streamPath = reply.value().path();
 
-    // Create stream interface
     auto *stream = new MutterScreenCastStreamInterface(streamPath, this);
     m_streams[streamPath] = stream;
 
-    // Connect PipeWire stream signal
     connect(stream, &MutterScreenCastStreamInterface::PipeWireStreamAdded,
             this, [this, streamPath](uint nodeId) {
                 qInfo() << "PipeWire stream added:" << streamPath << "node:" << nodeId;

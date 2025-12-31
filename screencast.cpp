@@ -128,8 +128,7 @@ uint ScreenCast::SelectSources(
         requestObj->deleteLater();
     });
 
-    // Show the dialog asynchronously (don't use exec())
-    int result = dialog->exec();
+    int result = dialog->exec(); // lol just shut up
 
     return 0;
 }
@@ -168,11 +167,11 @@ uint ScreenCast::Start(
     // Start session BEFORE building results
     m_mutterScreencast->startSession(niriSessionPath);
 
-    // WAIT briefly for PipeWire signal (synchronous-ish approach)
+    // wait till pipewire stream lol
     QEventLoop loop;
     QTimer timeout;
     timeout.setSingleShot(true);
-    timeout.setInterval(1000); // 1 second max wait
+    timeout.setInterval(1000); // MAGIC NUMBERS! :D
 
     connect(&timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
     connect(m_mutterScreencast, &MutterScreenCast::pipeWireStreamAdded,
@@ -246,25 +245,22 @@ void ScreenCast::onPipeWireStreamAdded(const QString &streamPath, uint nodeId)
 
     PendingStart pending = m_pendingStarts.take(streamPath);
 
-    // NOW build the results with the REAL node ID
     QVariantList streams;
     QVariantMap streamProperties;
 
     QVariantMap streamParams = m_mutterScreencast->getStreamParameters(streamPath);
-    // ... extract position/size like before ...
 
     streamProperties["position"] = QVariant::fromValue(QPoint(0, 0));
     streamProperties["size"] = QVariant::fromValue(QSize(1920, 1080));
     streamProperties["source_type"] = 1;
 
     QVariantList stream;
-    stream << nodeId;  // REAL node ID from Niri!
+    stream << nodeId;
     stream << streamProperties;
 
     streams << QVariant::fromValue(stream);
     (*pending.results)["streams"] = streams;
 
-    // NOW emit the closed signal to complete the request
     QTimer::singleShot(0, pending.request, &ScreenCastRequest::closed);
 }
 
