@@ -78,27 +78,58 @@ uint ScreenCast::SelectSources(
     const QVariantMap &options,
     QVariantMap &results)
 {
-    Q_UNUSED(session_handle)
+    qInfo() << "SelectSources called!";
+
     Q_UNUSED(app_id)
     Q_UNUSED(options)
-    Q_UNUSED(results)
 
     QDBusConnection bus = QDBusConnection::sessionBus();
-
-    // Create and export Request
     QObject *requestObj = new QObject(this);
     ScreenCastRequest *request = new ScreenCastRequest(requestObj);
     bus.registerObject(handle.path(), requestObj, QDBusConnection::ExportAdaptors);
 
+    // Create source selector dialog
+    SourceSelector *dialog = new SourceSelector(this);
+
+    // Handle accepted (user selected a source)
+    connect(dialog, &SourceSelector::accepted, this, [=]() {
+        SourceSelector::Source selected = dialog->getSelectedSource();
+
+        // Store selection for Start method
+        SelectedSource source;
+        source.sourceId = selected.id;
+        source.isWindow = (selected.type == SourceSelector::Window);
+        source.sessionHandle = session_handle.path();
+        m_selectedSources[session_handle.path()] = source;
+
+        qInfo() << "User selected:" << selected.displayName;
+
+        // Complete the request
+        QMetaObject::invokeMethod(request, &ScreenCastRequest::closed, Qt::QueuedConnection);
+
+        // Safe cleanup
+        dialog->deleteLater();
+    });
+
+    // Handle rejected (user cancelled)
+    connect(dialog, &SourceSelector::rejected, this, [=]() {
+        qInfo() << "User cancelled source selection";
+
+        // Still need to complete the request
+        QMetaObject::invokeMethod(request, &ScreenCastRequest::closed, Qt::QueuedConnection);
+
+        // Safe cleanup
+        dialog->deleteLater();
+    });
+
+    // Setup request cleanup
     connect(request, &ScreenCastRequest::closed, requestObj, [=]() {
         QDBusConnection::sessionBus().unregisterObject(handle.path());
-        m_sessions.remove(session_handle.path());
         requestObj->deleteLater();
     });
 
-    // Here you would show UI for source selection
-    // For minimal implementation, just auto-succeed
-    QTimer::singleShot(0, request, &ScreenCastRequest::closed);
+    // Show the dialog asynchronously (don't use exec())
+    int result = dialog->exec();
 
     return 0;
 }
@@ -123,7 +154,16 @@ uint ScreenCast::Start(
     QString niriSessionPath = m_mutterScreencast->createSession();
     m_portalToNiriSession[session_handle.path()] = niriSessionPath;
 
-    QString streamPath = m_mutterScreencast->recordMonitor(niriSessionPath, "DP-1", 1);
+    SelectedSource source = m_selectedSources.value(session_handle.path());
+    QString streamPath;
+
+    if (source.isWindow) {
+        streamPath = m_mutterScreencast->recordWindow(
+            niriSessionPath, source.sourceId.toULongLong(), 1);
+    } else {
+        streamPath = m_mutterScreencast->recordMonitor(
+            niriSessionPath, source.sourceId, 1);
+    }
 
     // Start session BEFORE building results
     m_mutterScreencast->startSession(niriSessionPath);

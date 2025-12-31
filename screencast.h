@@ -8,6 +8,8 @@
 #include "screencastsession.h"
 #include "mutterscreencast.h"
 #include "screencastrequest.h"
+#include "sourceselector.h"
+
 
 class ScreenCast : public QDBusAbstractAdaptor
 {
@@ -66,6 +68,14 @@ private:
     QMap<QString, QString> m_portalToNiriSession;
     QMap<QString, uint> m_streamNodeIds;
     QMap<QString, PendingStart> m_pendingStarts;
+
+    struct SelectedSource {
+        QString sessionHandle;
+        QString sourceId;
+        bool isWindow;
+    };
+
+    QMap<QString, SelectedSource> m_selectedSources;
 };
 
 struct ScreenCastStream {

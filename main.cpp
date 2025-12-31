@@ -1,11 +1,12 @@
-#include <QCoreApplication>
+#include <QApplication>
 #include <QDBusConnection>
 #include <QDebug>
 #include "screencast.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);
+    QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
 
     QDBusConnection bus = QDBusConnection::sessionBus();
 
