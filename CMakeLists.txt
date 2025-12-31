@@ -8,22 +8,20 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core DBus Widgets Quick QuickControls2)
 
 qt_standard_project_setup()
 
-qt_add_executable(xdg-desktop-portal-uni
-    main.cpp
-    screencast.h screencast.cpp
-    screencastrequest.h screencastrequest.cpp
-    screencastsession.h screencastsession.cpp
-    mutterscreencast.h mutterscreencast.cpp
-    sourceselector.h sourceselector.cpp
-)
+file(GLOB_RECURSE PROJ_SRC src/*.cpp)
+
+qt_add_executable(xdg-desktop-portal-uni ${PROJ_SRC})
 
 qt_add_qml_module(xdg-desktop-portal-uni
     URI SourceSelectorModule
     VERSION 1.0
-    QML_FILES SourceSelector.qml
+    QML_FILES qml/SourceSelector.qml
     RESOURCES
-    SOURCES mutterdisplayconfig.h mutterdisplayconfig.cpp
-    SOURCES muttershellintrospect.h muttershellintrospect.cpp
+)
+
+target_include_directories(xdg-desktop-portal-uni PUBLIC
+    src
+    src/niri
 )
 
 target_link_libraries(xdg-desktop-portal-uni

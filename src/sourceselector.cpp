@@ -55,7 +55,7 @@ void SourceSelector::setupUI()
     m_engine->rootContext()->setContextProperty("sourceModel", QVariant::fromValue(m_sourceObjects));
 
     // Load the QML file
-    m_engine->load(QUrl(QStringLiteral("qrc:/SourceSelectorModule/SourceSelector.qml")));
+    m_engine->load(QUrl(QStringLiteral("qrc:/SourceSelectorModule/qml/SourceSelector.qml")));
 
     qInfo() << "Loaded SourceSelector.qml";
 

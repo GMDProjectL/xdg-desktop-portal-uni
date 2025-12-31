@@ -49,6 +49,10 @@ Window {
                 height: 48
                 padding: 20
 
+                background: Rectangle {
+                    color: listView.currentIndex != index ? palette.base : palette.highlight
+                }
+
                 Label {
                     text: model.displayName
                     font.pixelSize: 13
