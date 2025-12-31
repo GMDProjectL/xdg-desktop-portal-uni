@@ -43,7 +43,7 @@ private slots:
 
 private:
     void setupUI();
-    void populateHardcodedSources();
+    void populateSources();
 
     QQuickView *m_view;
     QQmlApplicationEngine *m_engine;

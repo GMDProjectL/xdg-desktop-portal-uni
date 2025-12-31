@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.19)
 project(xdg-desktop-portal-uni LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED On)
+
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core DBus Widgets Quick QuickControls2)
 
 qt_standard_project_setup()
@@ -19,6 +22,8 @@ qt_add_qml_module(xdg-desktop-portal-uni
     VERSION 1.0
     QML_FILES SourceSelector.qml
     RESOURCES
+    SOURCES mutterdisplayconfig.h mutterdisplayconfig.cpp
+    SOURCES muttershellintrospect.h muttershellintrospect.cpp
 )
 
 target_link_libraries(xdg-desktop-portal-uni

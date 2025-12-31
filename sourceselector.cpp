@@ -1,4 +1,6 @@
 #include "sourceselector.h"
+#include "mutterdisplayconfig.h"
+#include "muttershellintrospect.h"
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQmlListProperty>
@@ -8,7 +10,7 @@ SourceSelector::SourceSelector(QObject *parent)
     , m_view(nullptr)
     , m_engine(nullptr)
 {
-    populateHardcodedSources();
+    populateSources();
 }
 
 SourceSelector::~SourceSelector()
@@ -105,27 +107,70 @@ int SourceSelector::exec()
     return loop.exec();
 }
 
-void SourceSelector::populateHardcodedSources()
+void SourceSelector::populateSources()
 {
-    // Hardcoded monitor list
-    QVector<Source> monitors = {
-        {Monitor, "DP-1", "Monitor 1 (DP-1)"},
-        {Monitor, "HDMI-1", "Monitor 2 (HDMI-1)"},
-        {Monitor, "eDP-1", "Laptop Screen (eDP-1)"}
-    };
+    m_sources.clear();
 
-    // Hardcoded window list
-    QVector<Source> windows = {
-        {Window, "1234", "Firefox Browser"},
-        {Window, "5678", "Terminal"}
-    };
+    MutterDisplayConfig displayConfig;
 
-    for (const auto &monitor : monitors) {
-        m_sources.append(monitor);
+    if (!displayConfig.isAvailable()) {
+        qWarning() << "Hell no, display config is not available...";
+        return;
     }
 
+    QVector<MonitorInfo> monitors = displayConfig.getMonitors();
+    qInfo() << "Found " << monitors.size() << " monitors.";
+
+    for (const auto& monitor : monitors) {
+        Source source;
+        source.type = Monitor;
+        source.id = monitor.connector;
+
+        if (!monitor.displayName.isEmpty()) {
+            source.displayName = QString("%1 (%2x%3 @ %4 Hz)")
+            .arg(monitor.displayName)
+                .arg(monitor.currentWidth)
+                .arg(monitor.currentHeight)
+                .arg(monitor.currentRefreshRate, 0, 'f', 2); // didn't know Qt has string formatting built-in, I was gonna use fmt or smth like that lol
+        }
+        else {
+            source.displayName = QString("%1 (%2x%3)")
+            .arg(monitor.connector)
+                .arg(monitor.currentWidth)
+                .arg(monitor.currentHeight);
+        }
+
+        m_sources.append(source);
+        qInfo() << "Added monitor: " << source.displayName;
+    }
+
+    MutterShellIntrospect shellIntrospect;
+    if (!shellIntrospect.isAvailable()) {
+        qWarning() << "Sorry, no windows for you, I guess.";
+        return;
+    }
+
+    QVector<WindowInfo> windows = shellIntrospect.getWindows();
+    qInfo() << "Found" << windows.size() << "windows";
+
     for (const auto &window : windows) {
-        m_sources.append(window);
+        Source source;
+        source.type = Window;
+        source.id = QString::number(window.windowId);
+
+        if (!window.title.isEmpty()) {
+            source.displayName = window.title;
+            if (!window.appId.isEmpty()) {
+                source.displayName += QString(" [%1]").arg(window.appId);
+            }
+        } else if (!window.appId.isEmpty()) {
+            source.displayName = window.appId;
+        } else {
+            source.displayName = QString("Window %1").arg(window.windowId);
+        }
+
+        m_sources.append(source);
+        qInfo() << "Added window:" << source.displayName;
     }
 }
 

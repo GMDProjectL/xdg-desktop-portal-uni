@@ -93,8 +93,10 @@ QString MutterScreenCast::recordWindow(const QString &sessionPath,
         return QString();
     }
 
+    qInfo() << "Window ID: " << windowId;
+
     QVariantMap properties;
-    properties["window-id"] = QVariant::fromValue(windowId);
+    properties["window-id"] = static_cast<qulonglong>(windowId);
     properties["cursor-mode"] = cursorMode;
 
     QDBusReply<QDBusObjectPath> reply = session->RecordWindow(properties);

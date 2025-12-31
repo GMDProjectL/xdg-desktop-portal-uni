@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QDBusConnection>
 #include <QDebug>
+#include <QtDBus>
 #include "screencast.h"
 
 int main(int argc, char *argv[])
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
     // Create main object
     QObject *service = new QObject(&app);
     ScreenCast *screencast = new ScreenCast(service);
+
 
     // Register object
     if (!bus.registerObject("/org/freedesktop/portal/desktop",
