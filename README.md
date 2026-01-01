@@ -2,6 +2,11 @@
 
 A backend implementation of [xdg-desktop-portal](https://github.com/flatpak/xdg-desktop-portal) for Uni desktop environment and [Niri](https://github.com/YaLTeR/niri) compositor.
 
+This portal features Microsoft's former Modern/Metro/Win8 UI.
+
+
+<img src="assets/screenshot.png" alt="portal overlay" height="400">
+
 ## Features
 
 - **ScreenCast interface**: Screen and window capture via PipeWire
