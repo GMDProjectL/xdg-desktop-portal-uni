@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core DBus Widgets Quick QuickControls2)
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(GIO REQUIRED gio-unix-2.0)
+
 
 qt_standard_project_setup()
 
@@ -22,7 +26,10 @@ qt_add_qml_module(xdg-desktop-portal-uni
 target_include_directories(xdg-desktop-portal-uni PUBLIC
     src
     src/niri
+    ${GIO_INCLUDE_DIRS}
 )
+
+target_compile_options(xdg-desktop-portal-uni PRIVATE ${GIO_CFLAGS_OTHER})
 
 target_link_libraries(xdg-desktop-portal-uni
     PRIVATE
@@ -31,6 +38,7 @@ target_link_libraries(xdg-desktop-portal-uni
     Qt::Widgets
     Qt::Quick
     Qt::QuickControls2
+    ${GIO_LIBRARIES}
 )
 
 

@@ -7,6 +7,7 @@
 #include <QQmlEngine>
 #include <QQuickView>
 #include <QQmlApplicationEngine>
+#include <qtmetamacros.h>
 
 class SourceSelector : public QObject
 {
@@ -26,12 +27,14 @@ public:
         QString displayName;
     };
 
-    explicit SourceSelector(QObject* parent = nullptr);
+    explicit SourceSelector(QObject* parent = nullptr, QString requestAppId = "");
     ~SourceSelector();
 
     void show();
     int exec();
     Source getSelectedSource() const { return m_selectedSource; }
+
+    Q_INVOKABLE QString getAppDisplayName(QString appId);
 
 signals:
     void accepted();
@@ -50,6 +53,7 @@ private:
     QVector<Source> m_sources;
     Source m_selectedSource;
     QObjectList m_sourceObjects;
+    QString m_requestAppId;
 };
 
 // QML-compatible model item

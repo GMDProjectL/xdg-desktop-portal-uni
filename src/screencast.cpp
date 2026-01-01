@@ -80,7 +80,6 @@ uint ScreenCast::SelectSources(
 {
     qInfo() << "SelectSources called!";
 
-    Q_UNUSED(app_id)
     Q_UNUSED(options)
 
     QDBusConnection bus = QDBusConnection::sessionBus();
@@ -89,7 +88,7 @@ uint ScreenCast::SelectSources(
     bus.registerObject(handle.path(), requestObj, QDBusConnection::ExportAdaptors);
 
     // Create source selector dialog
-    SourceSelector *dialog = new SourceSelector(this);
+    SourceSelector *dialog = new SourceSelector(this, app_id);
 
     // Handle accepted (user selected a source)
     connect(dialog, &SourceSelector::accepted, this, [=]() {
@@ -108,7 +107,7 @@ uint ScreenCast::SelectSources(
         QMetaObject::invokeMethod(request, &ScreenCastRequest::closed, Qt::QueuedConnection);
 
         // Safe cleanup
-        dialog->deleteLater();
+        // dialog->deleteLater();
     });
 
     // Handle rejected (user cancelled)
@@ -119,7 +118,7 @@ uint ScreenCast::SelectSources(
         QMetaObject::invokeMethod(request, &ScreenCastRequest::closed, Qt::QueuedConnection);
 
         // Safe cleanup
-        dialog->deleteLater();
+        // dialog->deleteLater();
     });
 
     // Setup request cleanup
