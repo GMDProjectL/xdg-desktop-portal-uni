@@ -10,6 +10,7 @@
 #include <QQuickItem>
 #include <QQmlListProperty>
 #include <qlogging.h>
+#include <systemsettings.h>
 
 SourceSelector::SourceSelector(QObject *parent, QString requestAppId)
     : QObject(parent)
@@ -137,6 +138,8 @@ void SourceSelector::setupUI()
             this  // Changed parent to 'this' instead of m_engine
             ));
     }
+
+    m_engine->rootContext()->setContextProperty("SystemSettings", SystemSettings::instance());
 
     // Set context property BEFORE loading QML
     m_engine->rootContext()->setContextProperty("requestAppId", QVariant::fromValue(m_requestAppId));

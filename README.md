@@ -19,6 +19,8 @@ This portal features Microsoft's former Modern/Metro/Win8 UI.
 - CMake >= 3.19
 - C++20 compatible compiler
 - Qt6 >= 6.5 (Base, DBus, Widgets, Quick, QuickControls2)
+- [unisettings](https://github.com/GMDProjectL/unisettings)
+- [UniQmlTk](https://github.com/GMDProjectL/UniQmlTk)
 
 ### Runtime dependencies
 - qt6-base

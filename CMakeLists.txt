@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core DBus Widgets Quick QuickControls2)
+find_package(UniQmlTk REQUIRED)
 
 qt_standard_project_setup()
 
@@ -22,6 +23,7 @@ qt_add_qml_module(xdg-desktop-portal-uni
 target_include_directories(xdg-desktop-portal-uni PUBLIC
     src
     src/niri
+    /usr/include/unisettings
 )
 
 target_link_libraries(xdg-desktop-portal-uni
@@ -31,6 +33,7 @@ target_link_libraries(xdg-desktop-portal-uni
     Qt::Widgets
     Qt::Quick
     Qt::QuickControls2
+    UniQmlTk unisettings
 )
 
 
