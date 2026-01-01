@@ -27,8 +27,6 @@ SourceSelector::~SourceSelector()
     }
 }
 
-
-
 std::string parseNameFromFile(const std::filesystem::path& path) {
     std::ifstream file(path);
     std::string line;
@@ -87,31 +85,26 @@ std::string findDisplayName(const std::string& identifier) {
             if (entry.path().extension() != ".desktop") continue;
             
             std::string filename = entry.path().filename().string();
-            std::string nameFromFile = parseNameFromFile(entry.path());
-            nameFromFile = nameFromFile != "" ? nameFromFile : identifier;
             
             // Check if filename matches (desktop ID)
             if (filename == identifier || filename == identifier + ".desktop") {
-                return nameFromFile;
+                return parseNameFromFile(entry.path());
             }
             
             // Check if StartupWMClass matches
             std::string wmClass = parseWMClassFromFile(entry.path());
-
-            if (wmClass == "") return identifier;
-
             if (wmClass == identifier) {
-                return nameFromFile;
+                return parseNameFromFile(entry.path());
             }
         }
     }
     
-    return "";
+    return identifier;
 }
 
 QString SourceSelector::getAppDisplayName(QString appId) {
     auto displayName = findDisplayName(appId.toStdString());
-    return QString::fromStdString(displayName);
+    return displayName == "" ? appId : QString::fromStdString(displayName);
 }
 
 void SourceSelector::setupUI()
@@ -257,7 +250,7 @@ void SourceSelector::populateSources()
         if (!window.title.isEmpty()) {
             source.displayName = window.title;
         } else if (!window.appId.isEmpty()) {
-            source.displayName = QString::fromStdString(findDisplayName(window.appId.toStdString()));
+            source.displayName = getAppDisplayName(window.appId);
         } else {
             source.displayName = QString("Window %1").arg(window.windowId);
         }

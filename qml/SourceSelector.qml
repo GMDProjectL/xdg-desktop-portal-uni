@@ -103,6 +103,7 @@ ApplicationWindow {
             id: contentColumn
             anchors.fill: parent
             anchors.margins: 24
+            spacing: 0
 
             Label {
                 text: "Share"
@@ -114,8 +115,8 @@ ApplicationWindow {
 
             Label {
                 text: "a screen or a window"
-                font.pointSize: 35
-                font.weight: 200
+                font.pointSize: 28
+                font.weight: 300
                 opacity: 0.45
                 leftPadding: 30
             }
@@ -125,7 +126,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                Layout.topMargin: 15
+                Layout.topMargin: 25
 
                 clip: true
                 currentIndex: 0
@@ -184,7 +185,7 @@ ApplicationWindow {
                     }
 
                     Label {
-                        text: model.displayName
+                        text: (model.type == 0 ? "[Monitor] " : "") + model.displayName
                         font.pointSize: 13
                         leftPadding: 24
                         rightPadding: 24
