@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.freedesktop.impl.portal.desktop.uni
+Exec=@LIBEXECDIR@/xdg-desktop-portal-uni
+SystemdService=xdg-desktop-portal-uni.service

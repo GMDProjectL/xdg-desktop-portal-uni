@@ -4,6 +4,7 @@
 .qtcreator
 .cache
 build/
+.vscode
 
 *~
 *.autosave

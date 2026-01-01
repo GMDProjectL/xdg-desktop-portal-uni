@@ -1,0 +1,9 @@
+[Unit]
+Description=Portal service (Uni)
+PartOf=graphical-session.target
+
+[Service]
+Type=dbus
+BusName=org.freedesktop.impl.portal.desktop.uni
+ExecStart=@LIBEXECDIR@/xdg-desktop-portal-uni
+Restart=on-failure
