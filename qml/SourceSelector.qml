@@ -31,63 +31,39 @@ BaseSidebarShellOverlay {
             currentIndex: 0
             focus: true
 
+            Component.onCompleted: {
+                listView.forceActiveFocus()
+            }
+
+            keyNavigationEnabled: true
+            keyNavigationWraps: true
+
             model: sourceModel
 
             highlight: Rectangle {
                 color: "transparent"
             }
 
-            delegate: ItemDelegate {
+            delegate: PressableListDelegate {
                 id: sourceDelegate
                 width: listView.width
                 height: 56
                 padding: 20
 
-                property bool activeAndHighlighted: listView.currentIndex == index
-                property bool isPressed: false
+                activeAndHighlighted: listView.currentIndex == index
 
-                scale: isPressed ? 0.985 : 1
-
-                Behavior on scale {
-                    NumberAnimation {
-                        duration: 80
-                        easing.type: Easing.OutBack
-                    }
+                onClicked: listView.currentIndex = index
+                onDoubleClicked: {
+                    root.sourceSelected(index)
+                    root.closeAnimation()
                 }
 
-                MouseArea {
-                    id: sourceDelegateArea
-                    anchors.fill: parent
-
-                    onClicked: listView.currentIndex = index
-                    onDoubleClicked: {
-                        root.sourceSelected(index)
-                        root.closeAnimation()
-                    }
-
-                    onPressedChanged: {
-                        sourceDelegate.isPressed = sourceDelegateArea.containsPress
-                    }
-                }
-
-                background: Rectangle {
-                    color: sourceDelegate.isPressed ? Universal.baseMediumColor : (!sourceDelegate.activeAndHighlighted
-                        ? (sourceDelegate.hovered
-                            ? Universal.baseLowColor
-                            : Universal.background
-                        )
-                        : Universal.accent
-                    )
-                    border.color: sourceDelegate.activeAndHighlighted ? Qt.lighter(Universal.accent) : "transparent"
-                    border.width: 1
-                }
-
-                Label {
+                contentItem: Label {
                     text: (model.type == 0 ? "[Monitor] " : "") + model.displayName
                     font.pointSize: 13
-                    leftPadding: 24
+                    leftPadding: 0
                     rightPadding: 24
-                    anchors.verticalCenter: parent.verticalCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
 
@@ -95,6 +71,11 @@ BaseSidebarShellOverlay {
 
             Keys.onReturnPressed: {
                 root.sourceSelected(currentIndex)
+                root.closeAnimation()
+            }
+
+            Keys.onEscapePressed: {
+                root.cancelled()
                 root.closeAnimation()
             }
         }

@@ -36,7 +36,6 @@ target_link_libraries(xdg-desktop-portal-uni
     UniQmlTk unisettings
 )
 
-
 # Install the executable to libexec
 install(TARGETS xdg-desktop-portal-uni
     BUNDLE  DESTINATION .

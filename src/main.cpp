@@ -3,9 +3,13 @@
 #include <QDebug>
 #include <QtDBus>
 #include "screencast.h"
+#include <cstdlib>
 
 int main(int argc, char *argv[])
 {
+    setenv("QSG_RENDER_LOOP", "threaded", 1);
+    setenv("vblank_mode", "0", 1);
+
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
