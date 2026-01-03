@@ -13,7 +13,7 @@ BaseSidebarShellOverlay {
     subtitleText: "a screen or a window"
 
     signal sourceSelected(int index)
-    signal cancelled()
+    signal cancelled
 
     property var model
 
@@ -58,11 +58,13 @@ BaseSidebarShellOverlay {
                     root.closeAnimation()
                 }
 
-                contentItem: Label {
+                contentItem: UniLabel {
                     text: (model.type == 0 ? "[Monitor] " : "") + model.displayName
                     font.pointSize: 13
-                    leftPadding: 0
+                    leftPadding: 20
                     rightPadding: 24
+                    animDelay: 100 + (index * 70)
+                    animDuration: 200
                     verticalAlignment: Text.AlignVCenter
                 }
             }
